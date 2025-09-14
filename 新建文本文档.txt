@@ -1,0 +1,4 @@
+ ./trumpowd -conf=/root/trum/trumpowd.conf -datadir=/root/trum/data
+./trumpowd -datadir=/root/trum/data -conf=/root/trum/trumpow.conf -reindex
+
+ ./trumpow-cli  -rpcuser=trum@7723 -rpcpassword=qq@772312 -rpcport=8401 getblockchaininfo

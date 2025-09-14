@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 地址模型 (现在是一个独立的实体)
+model Address {
+  id      Int    @id @default(autoincrement())
+  address String @unique // 钱包地址
+
+  utxos        UTXO[]
+  transactions Transaction[] @relation("TransactionAddresses")
+}
+
+// 未花费交易输出 (UTXO) 模型
+model UTXO {
+  id           Int     @id @default(autoincrement())
+  txid         String  // 交易ID
+  vout         Int     // 输出索引 (vout index)
+  address      String
+  amount       Decimal @db.Decimal(18, 8) // 金额
+  scriptPubKey String  @db.VarChar(512)
+  isSpent      Boolean @default(false)
+
+  addressModel Address @relation(fields: [address], references: [address])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([txid, vout])
+  @@index([address])
+}
+
+// 交易历史记录模型
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  txid        String   @unique
+  blockHeight Int
+  blockHash   String
+  timestamp   DateTime
+
+  // 关联所有参与这笔交易的地址
+  addresses   Address[] @relation("TransactionAddresses")
+
+  createdAt   DateTime @default(now())
+
+  @@index([blockHeight])
+}
+
+// 索引器状态模型
+model IndexerState {
+  id                 Int    @id @default(1)
+  singleton          String @unique @default("indexer")
+  lastProcessedBlock Int    @default(0)
+}
+
+
+model db_userList {
+  id        Int      @id @unique @default(autoincrement()) @db.UnsignedInt
+  address   String   @unique @db.Char(45)
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model db_coinPrise {
+  id        Int      @id @unique @default(autoincrement()) @db.UnsignedInt
+  price     Decimal  @default(0) @db.Decimal(30, 8)
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model db_blockChainInfo {
+  id                   Int     @id @unique @default(autoincrement()) @db.UnsignedInt
+  chain                String  @db.VarChar(20)
+  blocks               Int     @db.UnsignedInt
+  headers              Int     @db.UnsignedInt
+  bestblockhash        String  @db.Char(64)
+  difficulty           Decimal @db.Decimal(30, 8)
+  time                 Int     @db.UnsignedInt
+  mediantime           Int     @db.UnsignedInt
+  verificationprogress Decimal @db.Decimal(30, 8)
+  initialblockdownload Boolean
+  chainwork            String  @db.Char(64)
+  size_on_disk         Int     @db.UnsignedInt
+  pruned               Boolean
+  warnings             String  @db.VarChar(255)
+}
+
+model db_sendRawTransaction {
+  id          Int      @id @unique @default(autoincrement()) @db.UnsignedInt
+  address     String   @db.Char(45)
+  txid        String   @db.Char(64)
+  rawtx       String   @db.Text
+  totalInput  Decimal  @db.Decimal(30, 8)
+  totalOutput Decimal  @db.Decimal(30, 8)
+  change      Decimal  @db.Decimal(30, 8)
+  feeRate     Decimal  @db.Decimal(30, 8)
+  appFee      Decimal  @db.Decimal(30, 8)
+  createAt    DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
