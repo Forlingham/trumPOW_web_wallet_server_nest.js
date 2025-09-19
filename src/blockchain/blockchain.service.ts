@@ -67,6 +67,10 @@ export class BlockchainService implements OnModuleInit {
     return this.rpcCall('getrawtransaction', [txid, true])
   }
 
+  public async createrawtransaction(inputs: { txid: string; vout: number }[], outputs: { [address: string]: number }): Promise<string> {
+    return this.rpcCall('createrawtransaction', [inputs, outputs])
+  }
+
   /**
    * 核心 RPC 调用方法 (基于您提供的逻辑)
    * @param method RPC 方法名

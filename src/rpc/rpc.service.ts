@@ -12,7 +12,7 @@ export class RpcService {
   ) {}
 
   async onUserCreate(address: string) {
-    if (!address || address.length !== 45) {
+    if (!address) {
       return {
         success: false,
         error: '地址不能为空'
@@ -107,7 +107,7 @@ export class RpcService {
         data: {
           address: sendRawTransactionDto.address,
           txid: data.rpcData.txid,
-          rawtx: sendRawTransactionDto.rawtx,
+          rawtx: '',
           totalInput: sendRawTransactionDto.totalInput,
           totalOutput: sendRawTransactionDto.totalOutput,
           change: sendRawTransactionDto.change,

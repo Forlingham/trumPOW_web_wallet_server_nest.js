@@ -8,7 +8,6 @@ export class SendRawTransactionDto {
   address: string
   txid: string
   @IsNotEmpty()
-  @Length(100, 10000)
   rawtx: string
   @IsNotEmpty()
   totalInput: number

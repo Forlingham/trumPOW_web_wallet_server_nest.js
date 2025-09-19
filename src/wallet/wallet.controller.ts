@@ -53,6 +53,14 @@ export class WalletController {
     return this.walletService.getAddressTransactions(address, page, limit, showDetails, latestBlock)
   }
 
+  @Post('/createrawtransaction')
+  @HttpCode(HttpStatus.OK)
+  async createrawtransaction(
+    @Body() createrawtransactionDto: { inputs: { txid: string; vout: number }[]; outputs: { [address: string]: number } }
+  ) {
+    return this.walletService.createrawtransaction(createrawtransactionDto.inputs, createrawtransactionDto.outputs)
+  }
+
   @Post('/broadcast')
   @HttpCode(HttpStatus.OK)
   async broadcastTransaction(@Body() broadcastTxDto: BroadcastTxDto) {

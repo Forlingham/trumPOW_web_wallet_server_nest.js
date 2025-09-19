@@ -89,7 +89,7 @@ export class WalletService {
         unspents: utxos,
         total_amount: utxos.reduce((acc, utxo) => acc.add(utxo.amount), new Decimal(0))
       },
-      success: true,
+      success: true
     }
   }
 
@@ -241,6 +241,22 @@ export class WalletService {
       amount: netAmount.abs().toString(),
       counterparties,
       confirmations: confirmations
+    }
+  }
+
+  /**
+   * 创建一个裸交易
+   * @param inputs 输入的UTXO列表，每个UTXO包含txid和vout
+   * @param outputs 输出的地址和金额，键为地址，值为金额
+   * @returns 裸交易的16进制字符串
+   */
+  async createrawtransaction(inputs: { txid: string; vout: number }[], outputs: { [address: string]: number }) {
+    const rawTxHex = await this.blockchainService.createrawtransaction(inputs, outputs)
+    return {
+      success: true,
+      rpcData: {
+        rawTxHex
+      }
     }
   }
 
